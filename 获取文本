@@ -1,0 +1,43 @@
+// ==UserScript==
+// @name         抓取Telegram初始化参数并提取tgWebAppData
+// @namespace    http://tampermonkey.net/
+// @version      0.6
+// @description  抓取sessionStorage中的__telegram__initParams内容，提取tgWebAppData并手动复制
+// @author       你自己
+// @match        https://hamsterkombatgame.io/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 等待页面加载完成
+    window.addEventListener('load', function() {
+        // 延迟5秒执行
+        setTimeout(function() {
+            try {
+                // 获取session storage中的__telegram__initParams
+                let telegramParams = sessionStorage.getItem('__telegram__initParams');
+                
+                console.log("抓取到的Telegram 初始化参数: ", telegramParams);  // 日志输出到控制台
+
+                if (telegramParams) {
+                    // 解析抓取的参数，提取tgWebAppData
+                    let parsedParams = JSON.parse(telegramParams);
+                    if (parsedParams && parsedParams.tgWebAppData) {
+                        let tgWebAppData = parsedParams.tgWebAppData;
+                        // 提示用户手动复制提取的tgWebAppData
+                        prompt("抓取到的tgWebAppData如下，请手动复制:", tgWebAppData);
+                    } else {
+                        alert("未找到 tgWebAppData。");
+                    }
+                } else {
+                    alert("__telegram__initParams 不存在于 sessionStorage 中。");
+                }
+            } catch (e) {
+                console.error("抓取或解析失败: ", e);
+                alert("抓取或解析参数时出错，请查看控制台日志。");
+            }
+        }, 5000);  // 延迟5秒（5000毫秒）
+    });
+})();
